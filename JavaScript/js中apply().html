@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+	
+
+	<script type="text/javascript">
+		function cat(){
+
+		}
+		cat.prototype={     
+			food:"fish",     
+			say: function(){           
+				alert("I love "+this.food);     
+			}
+		}
+		var blackCat = new cat;blackCat.say();
+		var whiteDog = {food:"bone"}
+		blackCat.say.call(whiteDog)
+	</script>
+</body>
+</html>

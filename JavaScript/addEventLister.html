@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>addEventLister方法</title>
+</head>
+<body>
+	<div id="div1">
+		<p id="p1">点击段落，我是冒泡，默认默认默认是从里到外处理事件的冒泡。</p>
+	</div>
+	<div id="div2">
+		<p id="p2">点击段落，我是捕获</p>
+	</div>
+
+
+	<script type="text/javascript">
+		document.getElementById("p1").addEventListener("click", function(){
+		    alert("你点击了 P 元素!");
+		}, false);
+		document.getElementById("div1").addEventListener("click", function(){
+		    alert("你点击了 DIV 元素!");
+		}, false);
+		document.getElementById("p2").addEventListener("click", function() {
+		    alert("你点击了 P 元素!");
+		}, true);
+		document.getElementById("div2").addEventListener("click", function() {
+		    alert("你点击了 DIV 元素!");
+		}, true);
+	</script>
+</body>
+</html>

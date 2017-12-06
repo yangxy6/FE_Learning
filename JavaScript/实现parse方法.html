@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+<body>
+    
+
+    <script>
+        var o = {
+            b:{
+                c:4
+            },
+            d:[
+                {
+                    e:5
+                },
+                {
+                    e:6
+                }
+            ]
+        }
+
+        function parse(obj,str){
+            str.replace('[','.').replace(']','').split('.').map((e) => obj = obj[e.trim()]);
+            return obj || 'undefied';
+        }
+
+        console.log(parse(o,'b.c')==4)
+    </script>
+</body>
+</html>

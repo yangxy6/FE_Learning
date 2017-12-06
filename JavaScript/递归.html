@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+<body>
+    
+
+    <script>
+        //递归
+        //栗子：1+2+3+...+100的和
+        function foo(n){
+            if (n == 1 ) {
+                return 1;
+            } else {
+                return n+foo(n-1);
+            }
+        }
+        foo(100);
+        console.log(foo(100));
+    </script>
+</body>
+</html>

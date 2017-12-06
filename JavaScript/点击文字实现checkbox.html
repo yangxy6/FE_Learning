@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+<body>
+    
+    <div>
+        <input type="checkbox" id="check">
+        <p id="text">点击我啊</p>
+    </div>
+
+    <script>
+        var txt = document.getElementById("text");
+        var check = document.getElementById("check");
+        txt.addEventListener('click',function(){
+            check.checked = true;
+        })
+    </script>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+<body>
+    
+
+    <script>
+        function add(num) {
+            num ++;
+        }
+        var p = 1;
+        add(p);
+        console.log(p)//1
+        //基本数据类型，是复制一份内存，新的数据和老数据互相没有影响。
+
+
+        function change(o){
+            o.name = "小涛涛";
+        }
+        var q = {
+            name:"小莹莹",
+            age:18
+        }
+        change(q);
+        console.log(q.name,q.age);//小涛涛，18
+        //引用数据类型是创建新的对象，同时指向同一个内存地址，当数据改变时内存地址不变，内存数据发生变化。
+
+        function foo(o){
+            o = {
+                name:"小涛涛"
+            }
+        }
+        var p;//p未定义，不是引用类型
+        foo(p);
+        console.log(p.name);//找不到p.name
+        //{}和new 都是创建对象，在内存里创建新的内存地址
+
+        function foo(o){
+            o = {
+                name:"小涛涛"
+            }//创建对象指向了新的内存地址
+        }
+        var p = {};
+        foo(p);
+        console.log(p.name);//undefined
+        p.name = "小莹莹";
+        console.log(p.name);//小莹莹
+
+        function foo(o){
+            o.name = "小涛涛";
+            o = {
+                name:"小琪琪"
+            }
+        }
+        var p = {};
+        foo(p);
+        console.log(p.name);//小涛涛
+    </script>
+</body>
+</html>

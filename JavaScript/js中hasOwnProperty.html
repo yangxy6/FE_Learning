@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+	
+
+	<script type="text/javascript">
+		var obj = {a:1}
+		console.log(obj.hasOwnProperty('a')) //true
+		console.log(obj.hasOwnProperty('toString'))// false，toString是继承了Object,从原型上得到的。
+	</script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+  <script>
+    // es6字符串扩展，浏览器原生支持
+    // 1、repeat()函数，返回一个新的字符串，不影响之前的字符串
+    var name = "lala"
+    var name2 = name.repeat(2)
+    console.log(name2)
+
+    // 2、includes()函数，判断一个字符串中是否含有另一个字符串
+    // true/false 第二个参数选填，开始搜索的位置
+    // 判断一个字符串中含有另一个字符串，indexOf()或者includes()
+    var name = "小丫小二郎"
+    console.log(name.includes('小',4))
+    
+    // 3、startsWith()函数，判断指定字符串是否在目标字符串的开始位置
+    // 4、endsWith()函数，判断指定字符串是否在目标字符串的结尾位置
+    // 5、raw()函数，返回字符串原始样子，包括转译符
+  </script>
+</body>
+</html>
