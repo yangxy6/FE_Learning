@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+	<script type="text/javascript">
+		function test () {
+			console.log(111)
+			function test2 () {
+				console.log(222)
+			}
+			return test2
+		}
+		console.log(test()) // ƒ test2() {console.log(222)} 打印整个方法体
+
+		function test3 () {
+			console.log(333)
+			function test4 () {
+				console.log(444)
+				return 555
+			}
+			return test4()
+		}
+		console.log(test3()) // 555 打印test4()的结果
+
+		//总结：return test 返回整个方法体，return test() 返回方法执行的结果
+	</script>
+</body>
+</html>
