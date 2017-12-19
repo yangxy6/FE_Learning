@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>实现手写jsonp</title>
+</head>
+<body>
+	
+	<script type="text/javascript">
+		var script = document.createElement('script')
+		// 服务端数据格式 
+		//myFun({"reason":"查询成功","result":[{"carrier_code":"ems","carrier_phone":"11183","carrier_name":"EMS"},{"carrier_code":"zhongtong","carrier_phone":"021-39777777","carrier_name":"中通快递"},{"carrier_code":"yousu","carrier_phone":"400-1111-119","carrier_name":"优速快递"},{"carrier_code":"yuantong","carrier_phone":"021-69777888","carrier_name":"圆通速递"},{"carrier_code":"zjs","carrier_phone":"400-6789-000","carrier_name":"宅急送"},{"carrier_code":"debang","carrier_phone":"400-830-5555","carrier_name":"德邦物流"},{"carrier_code":"huitong","carrier_phone":"021-62963636","carrier_name":"百世汇通"},{"carrier_code":"shunfeng","carrier_phone":"400-811-1111","carrier_name":"顺丰速运"}],"error_code":0})
+		script.src = "http://v.juhe.cn/expressonline/getCarriers.php?key=6a1038e454e6d4b25457b911c8d9b815&callback=myFun"
+		document.body.insertBefore(script,document.body.firstChild)
+
+		function myFun(res){
+			debugger
+			console.log(res)//打印回调结果
+		}
+
+		//<script src="http://v.juhe.cn/expressonline/getCarriers.php?key=6a1038e454e6d4b25457b911c8d9b815&callback=myFun">等于动态生成script标签
+		// jsonp json with padding 包裹在函数中的json数据，同源之间不允许跨域，jsonp跨域原理是根据js<script>标签漏洞，带有src属性的标签都可以直接执行src里面的js。利用动态src属性调取服务端js，并传入一个回调方法名，服务端接收后，将参数方法名返回为函数，同时将数据放到方法参数中，前端在执行回调方法时可以获取到里面数据。jsonp实现原理
+		
+	</script>
+</body>
+</html>
