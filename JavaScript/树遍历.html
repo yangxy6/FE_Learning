@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+	
+
+	<script>
+
+    var treeData = [
+        {
+            title: '首页',
+            checked: true
+        },
+        {
+            title: '供应链管理',
+            expand: true,
+            children: [
+                {
+                    title: '预付款采购'
+                },
+                {
+                    title: '有账款采购'
+                },
+                {
+                    title: '总部销售'
+                },
+                {
+                    title: '总部分销'
+                },
+                {
+                    title: '分公司销售'
+                }
+            ]
+        },
+        {
+            title: '系统管理',
+            expand: true,
+            children: [
+                {
+                    title: '用户管理'
+                },
+                {
+                    title: '角色管理'
+                },
+                {
+                    title: '信息管理'
+                }
+            ]
+        }
+    ]
+    var arr = []
+
+    function getArray(data){
+        for (var i in data) {
+            if (data[i].children) {
+                for (var item in data[i].children){
+                	console.log(data[i].children[item]);
+                	arr.push(data[i].children[item])
+                }
+            } else {
+            	arr.push(data[i])
+            }
+        }
+    }
+    getArray(treeData)
+    // 通过遍历获取所有树的节点
+    console.log(arr)
+
+
+</script>
+</body>
+</html>
