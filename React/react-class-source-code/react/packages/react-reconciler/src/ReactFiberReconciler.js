@@ -130,7 +130,7 @@ function scheduleRootUpdate(
     }
   }
 
-  // 标记应用更新的地点
+  // 标记应用更新的地点，创建更新update
   const update = createUpdate(expirationTime); //!!!重点
   // Caution: React DevTools currently depends on this property
   // being called "element".
@@ -146,7 +146,7 @@ function scheduleRootUpdate(
     );
     update.callback = callback;
   }
-  // 加入更新queue
+  // 加入更新update queue
   enqueueUpdate(current, update);
 
   // 开始进行任务调度

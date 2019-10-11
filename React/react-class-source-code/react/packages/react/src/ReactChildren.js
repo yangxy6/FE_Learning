@@ -135,7 +135,7 @@ function traverseAllChildrenImpl(
   // 单个节点直接callback
   if (invokeCallback) {
     callback(
-       ,
+      traverseContext,
       children,
       // If it's the only child, treat the name as if it was wrapped in an array
       // so that it's consistent if the number of children grows.

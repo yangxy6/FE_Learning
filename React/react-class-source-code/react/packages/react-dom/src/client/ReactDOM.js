@@ -352,7 +352,7 @@ ReactRoot.prototype.render = function(
   if (callback !== null) {
     work.then(callback);
   }
-  DOMRenderer.updateContainer(children, root, null, work._onCommit);
+  DOMRenderer.updateContainer(children, root, null, work._onCommit);//更新
   return work;
 };
 ReactRoot.prototype.unmount = function(callback: ?() => mixed): Work {

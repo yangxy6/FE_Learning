@@ -190,7 +190,7 @@ export function createUpdate(expirationTime: ExpirationTime): Update<*> {
   return {
     expirationTime: expirationTime,
 
-    tag: UpdateState,
+    tag: UpdateState, //UpdateState = 0;ReplaceState = 1; ForceUpdate = 2; CaptureUpdate = 3
     payload: null,
     callback: null,
 
@@ -220,23 +220,23 @@ export function enqueueUpdate<State>(fiber: Fiber, update: Update<State>) {
   let queue1;
   let queue2;
   // q1和q2是不一样的，q1是 fiber.updateQueue，q2是alternate.updateQueue ，但是内部指向firstUpdate，firstUpdate是相同的。
-  // 第一次render时只执行if操作
+  // 第一次render时->queue1创建UpdateQueue
   if (alternate === null) {
     // There's only one fiber.
-    queue1 = fiber.updateQueue;
+    queue1 = fiber.updateQueue; //此时是null
     queue2 = null;
-    if (queue1 === null) {
+    if (queue1 === null) {// 创建UpdateQueue
       queue1 = fiber.updateQueue = createUpdateQueue(fiber.memoizedState);
     }
   } else {
-    // 已经渲染过了
+    // 已经渲染过了，此时有current.updateQueue和workinprogress.updateQueue两个更新队列
     // There are two owners.
     queue1 = fiber.updateQueue;
     queue2 = alternate.updateQueue;
     if (queue1 === null) {
       if (queue2 === null) {
         // Neither fiber has an update queue. Create new ones.
-        // 代表这个节点没有进行过更新
+        // 表示这个节点尚未更新过
         queue1 = fiber.updateQueue = createUpdateQueue(fiber.memoizedState);
         queue2 = alternate.updateQueue = createUpdateQueue(
           alternate.memoizedState,

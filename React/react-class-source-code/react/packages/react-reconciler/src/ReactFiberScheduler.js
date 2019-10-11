@@ -1497,6 +1497,8 @@ function computeUniqueAsyncExpiration(): ExpirationTime {
 
 function computeExpirationForFiber(currentTime: ExpirationTime, fiber: Fiber) {
   let expirationTime;
+  // NoWork:0
+  // Sync:1
   if (expirationContext !== NoWork) {
     // An explicit expiration context was set;
     // 通过外部强制expirationTime更新
@@ -1516,6 +1518,10 @@ function computeExpirationForFiber(currentTime: ExpirationTime, fiber: Fiber) {
     // No explicit expiration context was set, and we're not currently
     // performing work. Calculate a new expiration time.
     // 没有外部强制情况下，不是ConcurrentMode情况下都是同步更新
+    // NoContext：0
+    //ConcurrentMode：1
+    // StrictMode：2
+    // ProfileMode：4
     if (fiber.mode & ConcurrentMode) {
       // & fiber.mode是否是ConcurrentMode
       if (isBatchingInteractiveUpdates) {
@@ -1830,9 +1836,10 @@ let isBatchingInteractiveUpdates: boolean = false; //是否是批量交互更新
 let completedBatches: Array<Batch> | null = null;
 
 let originalStartTimeMs: number = now(); // bundle后初始化时间
+// 计算从页面加载到现在为止的毫秒数，后者会在isRendering === true的时候用作固定值返回，不然每次requestCurrentTime都会重新计算新的时间。
 let currentRendererTime: ExpirationTime = msToExpirationTime(
   originalStartTimeMs,
-); // 计算从页面加载到现在为止的毫秒数，后者会在isRendering === true的时候用作固定值返回，不然每次requestCurrentTime都会重新计算新的时间。
+);
 let currentSchedulerTime: ExpirationTime = currentRendererTime;
 
 // Use these to prevent an infinite loop of nested updates
@@ -1983,15 +1990,18 @@ function requestCurrentTime() {
 
 // requestWork is called by the scheduler whenever a root receives an update.
 // It's up to the renderer to call renderRoot at some point in the future.
-function requestWork(root: FiberRoot, expirationTime: ExpirationTime) { // 请求工作
+function requestWork(root: FiberRoot, expirationTime: ExpirationTime) {
+  // 请求工作
   addRootToSchedule(root, expirationTime);
-  if (isRendering) {  // 循环已经开始，任务已经进行
+  if (isRendering) {
+    // 循环已经开始，任务已经进行
     // Prevent reentrancy. Remaining work will be scheduled at the end of
     // the currently rendering batch.
     return;
   }
 
-  if (isBatchingUpdates) { // 批量处理
+  if (isBatchingUpdates) {
+    // 批量处理
     // Flush work at the end of the batch.
     if (isUnbatchingUpdates) {
       // ...unless we're inside unbatchedUpdates, in which case we should
@@ -2014,13 +2024,16 @@ function requestWork(root: FiberRoot, expirationTime: ExpirationTime) { // 请�
 function addRootToSchedule(root: FiberRoot, expirationTime: ExpirationTime) {
   // Add the root to the schedule.
   // Check if this root is already part of the schedule.
-  if (root.nextScheduledRoot === null) { // 没有进行过调度
+  if (root.nextScheduledRoot === null) {
+    // 没有进行过调度
     // This root is not already scheduled. Add it.
     root.expirationTime = expirationTime;
-    if (lastScheduledRoot === null) { //只有一个root，出现场景，只有有任务未更新完js执行交给浏览器了，执行权再次交回react时
+    if (lastScheduledRoot === null) {
+      //只有一个root，出现场景，只有有任务未更新完js执行交给浏览器了，执行权再次交回react时
       firstScheduledRoot = lastScheduledRoot = root;
       root.nextScheduledRoot = root;
-    } else {  // 多个root时以链表形式加在链表的最后
+    } else {
+      // 多个root时以链表形式加在链表的最后
       lastScheduledRoot.nextScheduledRoot = root;
       lastScheduledRoot = root;
       lastScheduledRoot.nextScheduledRoot = firstScheduledRoot;
@@ -2400,9 +2413,10 @@ function batchedUpdates<A, R>(fn: (a: A) => R, a: A): R {
   isBatchingUpdates = true;
   try {
     return fn(a);
-  } finally { 
+  } finally {
     isBatchingUpdates = previousIsBatchingUpdates;
-    if (!isBatchingUpdates && !isRendering) { // 批量更新
+    if (!isBatchingUpdates && !isRendering) {
+      // 批量更新
       performSyncWork();
     }
   }
