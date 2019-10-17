@@ -351,7 +351,7 @@ if (__DEV__ && replayFailedUnitOfWorkWithInvokeGuardedCallback) {
     throw originalReplayError;
   };
 }
-
+// 清空react的stack
 function resetStack() {
   if (nextUnitOfWork !== null) {
     //用于记录render阶段Fiber树遍历过程中下一个需要执行的节点。 在resetStack中分别被重置,他只会指向workInProgress
@@ -1117,7 +1117,7 @@ function performUnitOfWork(workInProgress: Fiber): Fiber | null {
   return next;
 }
 
-function workLoop(isYieldy) {
+function workLoop(isYieldy) { //同步false
   if (!isYieldy) {
     // Flush work without yielding
     while (nextUnitOfWork !== null) {
@@ -1131,7 +1131,7 @@ function workLoop(isYieldy) {
   }
 }
 
-function renderRoot(
+function renderRoot( //渲染root 超级重要！！！
   root: FiberRoot,
   isYieldy: boolean,
   isExpired: boolean,
@@ -1152,12 +1152,12 @@ function renderRoot(
     expirationTime !== nextRenderExpirationTime ||
     root !== nextRoot ||
     nextUnitOfWork === null
-  ) {
-    // Reset the stack and start working from the root.
+  ) { //有新的更新
+    // Reset the stack and start working from the root. 清空stack重新开始work
     resetStack();
     nextRoot = root;
     nextRenderExpirationTime = expirationTime;
-    nextUnitOfWork = createWorkInProgress(
+    nextUnitOfWork = createWorkInProgress( //返回workInProgress
       nextRoot.current,
       null,
       nextRenderExpirationTime,
@@ -1269,7 +1269,7 @@ function renderRoot(
             thrownValue,
             nextRenderExpirationTime,
           );
-          nextUnitOfWork = completeUnitOfWork(sourceFiber);
+          nextUnitOfWork = completeUnitOfWork(sourceFiber); // 因为报错，没必要渲染子节点
           continue;
         }
       }
@@ -1287,8 +1287,8 @@ function renderRoot(
   ReactCurrentOwner.currentDispatcher = null;
   resetContextDependences();
 
-  // Yield back to main thread.
-  if (didFatal) {
+  // Yield back to main thread. // 被中断回到主线程
+  if (didFatal) { //
     const didCompleteRoot = false;
     stopWorkLoopTimer(interruptedBy, didCompleteRoot);
     interruptedBy = null;
@@ -1304,7 +1304,7 @@ function renderRoot(
     return;
   }
 
-  if (nextUnitOfWork !== null) {
+  if (nextUnitOfWork !== null) { //任务没有执行完，被中断了
     // There's still remaining async work in this tree, but we ran out of time
     // in the current frame. Yield back to the renderer. Unless we're
     // interrupted by a higher priority update, we'll continue later from where
@@ -1332,9 +1332,9 @@ function renderRoot(
   nextRoot = null;
   interruptedBy = null;
 
-  if (nextRenderDidError) {
+  if (nextRenderDidError) { //捕捉到可处理的错误
     // There was an error
-    if (hasLowerPriorityWork(root, expirationTime)) {
+    if (hasLowerPriorityWork(root, expirationTime)) { //判断是否有优先级更低的任务
       // There's lower priority work. If so, it may have the effect of fixing
       // the exception that was just thrown. Exit without committing. This is
       // similar to a suspend, but without a timeout because we're not waiting
@@ -1348,7 +1348,7 @@ function renderRoot(
         rootWorkInProgress,
         suspendedExpirationTime,
         rootExpirationTime,
-        -1, // Indicates no timeout
+        -1, // Indicates no timeout 没有超时
       );
       return;
     } else if (
@@ -1750,6 +1750,7 @@ function scheduleWork(fiber: Fiber, expirationTime: ExpirationTime) {
   ) {
     // isWorking代表任务正在进行&&新的任务expirationTime高于nextRenderExpirationTime
     // This is an interruption. (Used for performance tracking.)
+    // 出现打断情况：上一个任务是异步任务（优先级很低，超时时间是 502ms），并且在上一个时间片（初始是 33ms）任务没有执行完，而且等待下一次requestIdleCallback的时候新的任务进来了，并且超时时间很短（52ms 或者 22ms 甚至是 Sync），那么优先级就变成了先执行当前任务，也就意味着上一个任务被打断了（interrupted）
     interruptedBy = fiber; // 高优先级任务打断了低优先级任务
     resetStack();
   }
@@ -2050,7 +2051,7 @@ function addRootToSchedule(root: FiberRoot, expirationTime: ExpirationTime) {
     }
   }
 }
-
+// 寻找最高优先级的Root
 function findHighestPriorityRoot() {
   let highestPriorityWork = NoWork;
   let highestPriorityRoot = null;
@@ -2150,16 +2151,15 @@ function performWork(minExpirationTime: ExpirationTime, dl: Deadline | null) {
   // the deadline.
   findHighestPriorityRoot();
 
-  if (deadline !== null) {
+  if (deadline !== null) {// 异步
     recomputeCurrentRendererTime();
     currentSchedulerTime = currentRendererTime;
 
-    if (enableUserTimingAPI) {
+    if (enableUserTimingAPI) { //DEV
       const didExpire = nextFlushedExpirationTime < currentRendererTime;
       const timeout = expirationTimeToMs(nextFlushedExpirationTime);
       stopRequestCallbackTimer(didExpire, timeout);
     }
-
     while (
       nextFlushedRoot !== null &&
       nextFlushedExpirationTime !== NoWork &&
@@ -2176,7 +2176,7 @@ function performWork(minExpirationTime: ExpirationTime, dl: Deadline | null) {
       recomputeCurrentRendererTime();
       currentSchedulerTime = currentRendererTime;
     }
-  } else {
+  } else {// 同步
     while (
       nextFlushedRoot !== null &&
       nextFlushedExpirationTime !== NoWork &&

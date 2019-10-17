@@ -87,7 +87,7 @@ function ensureHostCallbackIsScheduled() {
   if (!isHostCallbackScheduled) {
     isHostCallbackScheduled = true;
   } else {
-    // Cancel the existing host callback.
+    // Cancel the existing host callback. 已经开始调度了，需要取消，因为顺序变化了
     cancelHostCallback();
   }
   requestHostCallback(flushWork, expirationTime);
@@ -309,7 +309,7 @@ function unstable_scheduleCallback(callback, deprecated_options) {
   ) {
     // FIXME: Remove this branch once we lift expiration times out of React.
     expirationTime = startTime + deprecated_options.timeout;
-  } else {
+  } else {//未来expirationTime逻辑
     switch (currentPriorityLevel) {
       case ImmediatePriority:
         expirationTime = startTime + IMMEDIATE_PRIORITY_TIMEOUT;
@@ -580,7 +580,7 @@ if (typeof window !== 'undefined' && window._schedMock) {
       if (prevTimeoutTime !== -1 && prevTimeoutTime <= currentTime) {
         // Exceeded the timeout. Invoke the callback even though there's no
         // time left.
-        didTimeout = true;
+        didTimeout = true; //
       } else {
         // No timeout.
         if (!isAnimationFrameScheduled) {
