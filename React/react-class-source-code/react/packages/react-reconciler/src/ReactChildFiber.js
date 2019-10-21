@@ -262,7 +262,8 @@ function ChildReconciler(shouldTrackSideEffects) {
     returnFiber: Fiber,
     currentFirstChild: Fiber | null,
   ): null {
-    if (!shouldTrackSideEffects) { //第一次渲染
+    if (!shouldTrackSideEffects) {
+      //第一次渲染
       // Noop.
       return null;
     }
@@ -276,7 +277,7 @@ function ChildReconciler(shouldTrackSideEffects) {
     }
     return null;
   }
-// 循环放到map
+  // 循环放到map
   function mapRemainingChildren(
     returnFiber: Fiber,
     currentFirstChild: Fiber,
@@ -310,7 +311,7 @@ function ChildReconciler(shouldTrackSideEffects) {
     clone.sibling = null;
     return clone;
   }
-// 节点放到DOM上，判断是否需要放置
+  // 节点放到DOM上，判断是否需要放置
   function placeChild(
     newFiber: Fiber,
     lastPlacedIndex: number,
@@ -326,7 +327,7 @@ function ChildReconciler(shouldTrackSideEffects) {
       const oldIndex = current.index;
       if (oldIndex < lastPlacedIndex) {
         // This is a move.
-        newFiber.effectTag = Placement;//需要移动，要根据顺序插入到DOM中
+        newFiber.effectTag = Placement; //需要移动，要根据顺序插入到DOM中
         return lastPlacedIndex;
       } else {
         // This item can stay in place.
@@ -517,7 +518,7 @@ function ChildReconciler(shouldTrackSideEffects) {
 
     return null;
   }
-// 对比新老key是否相同决定是否可以复用fiber
+  // 对比新老key是否相同决定是否可以复用fiber
   function updateSlot(
     returnFiber: Fiber,
     oldFiber: Fiber | null,
@@ -529,7 +530,7 @@ function ChildReconciler(shouldTrackSideEffects) {
     const key = oldFiber !== null ? oldFiber.key : null;
 
     if (typeof newChild === 'string' || typeof newChild === 'number') {
-      // Text nodes don't have keys. If the previous node is implicitly keyed textNode没有keys 
+      // Text nodes don't have keys. If the previous node is implicitly keyed textNode没有keys
       // we can continue to replace it without aborting even if it is not a text
       // node.
       if (key !== null) {
@@ -771,8 +772,10 @@ function ChildReconciler(shouldTrackSideEffects) {
     let lastPlacedIndex = 0;
     let newIdx = 0;
     let nextOldFiber = null;
-    for (; oldFiber !== null && newIdx < newChildren.length; newIdx++) {// 分别遍历新老节点判断新老节点是否相同
-      if (oldFiber.index > newIdx) { //Fiber 中index是位置
+    for (; oldFiber !== null && newIdx < newChildren.length; newIdx++) {
+      // 分别遍历新老节点判断新老节点是否相同
+      if (oldFiber.index > newIdx) {
+        //Fiber 中index是位置
         nextOldFiber = oldFiber;
         oldFiber = null;
       } else {
@@ -796,7 +799,8 @@ function ChildReconciler(shouldTrackSideEffects) {
         break;
       }
       if (shouldTrackSideEffects) {
-        if (oldFiber && newFiber.alternate === null) {//newFiber.alternate 不存在说明节点没有复用代表老节点已经失效需要删除
+        if (oldFiber && newFiber.alternate === null) {
+          //newFiber.alternate 不存在说明节点没有复用代表老节点已经失效需要删除
           // We matched the slot, but we didn't reuse the existing fiber, so we
           // need to delete the existing child.
           deleteChild(returnFiber, oldFiber);
@@ -828,7 +832,8 @@ function ChildReconciler(shouldTrackSideEffects) {
     if (oldFiber === null) {
       // If we don't have any more existing children we can choose a fast path
       // since the rest will all be insertions.
-      for (; newIdx < newChildren.length; newIdx++) {//老节点已经复用结束，新节点需要创建
+      for (; newIdx < newChildren.length; newIdx++) {
+        //老节点已经复用结束，新节点需要创建
         const newFiber = createChild(
           returnFiber,
           newChildren[newIdx],
@@ -1285,7 +1290,8 @@ function ChildReconciler(shouldTrackSideEffects) {
       );
     }
 
-    if (isArray(newChild)) { //数组
+    if (isArray(newChild)) {
+      //数组
       return reconcileChildrenArray(
         returnFiber,
         currentFirstChild,

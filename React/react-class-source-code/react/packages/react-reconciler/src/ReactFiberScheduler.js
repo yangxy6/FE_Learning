@@ -1123,7 +1123,7 @@ function workLoop(isYieldy) { //同步false
     while (nextUnitOfWork !== null) {
       nextUnitOfWork = performUnitOfWork(nextUnitOfWork);
     }
-  } else {
+  } else { // nextUnitOfWork等于beginWork中return的next，如果next为空，在performUnitOfWork中会completeUnitOfWork，next!==null会继续Loop
     // Flush asynchronous work until the deadline runs out of time.
     while (nextUnitOfWork !== null && !shouldYield()) {
       nextUnitOfWork = performUnitOfWork(nextUnitOfWork);
@@ -1222,7 +1222,7 @@ function renderRoot( //渲染root 超级重要！！！
 
   do {
     try {
-      workLoop(isYieldy);
+      workLoop(isYieldy); // 循环在workLoop里面
     } catch (thrownValue) {
       if (nextUnitOfWork === null) {
         // This is a fatal error.

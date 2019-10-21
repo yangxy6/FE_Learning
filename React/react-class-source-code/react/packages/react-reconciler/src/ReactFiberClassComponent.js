@@ -183,7 +183,7 @@ export function applyDerivedStateFromProps(
   }
 }
 
-// 初始化拿到的对象
+// 初始化拿到的对象-> constructClassInstance创建实例中挂载的
 const classComponentUpdater = {
   isMounted,
   // setState方法
@@ -505,7 +505,7 @@ function checkClassInstance(workInProgress: Fiber, ctor: any, newProps: any) {
     }
   }
 }
-
+// ClassComponent的实例 挂载了一个updater对象
 function adoptClassInstance(workInProgress: Fiber, instance: any): void {
   instance.updater = classComponentUpdater;
   workInProgress.stateNode = instance;
@@ -789,7 +789,7 @@ function mountClassInstance(
 
   let updateQueue = workInProgress.updateQueue;
   if (updateQueue !== null) {
-    processUpdateQueue(
+    processUpdateQueue( //计算新的state
       workInProgress,
       updateQueue,
       newProps,
@@ -801,7 +801,7 @@ function mountClassInstance(
 
   const getDerivedStateFromProps = ctor.getDerivedStateFromProps;
   if (typeof getDerivedStateFromProps === 'function') {
-    applyDerivedStateFromProps(
+    applyDerivedStateFromProps( //class中有getDerivedStateFromProps就调用后重新更新workInProgress.memoizedState
       workInProgress,
       ctor,
       getDerivedStateFromProps,
@@ -834,7 +834,7 @@ function mountClassInstance(
     }
   }
 
-  if (typeof instance.componentDidMount === 'function') {
+  if (typeof instance.componentDidMount === 'function') { //最后判断是否有componentDidMount，如果有就修改workInProgress.effectTag |= Update，因为componentDidMount要在真正渲染进DOM之后才调用，也就是commit之后
     workInProgress.effectTag |= Update;
   }
 }

@@ -426,7 +426,7 @@ function updateFunctionComponent(
   );
   return workInProgress.child;
 }
-
+// 更新classCompone
 function updateClassComponent(
   current: Fiber | null,
   workInProgress: Fiber,
@@ -448,7 +448,7 @@ function updateClassComponent(
 
   const instance = workInProgress.stateNode;
   let shouldUpdate;
-  if (instance === null) {
+  if (instance === null) { // 是否已经创建实例
     if (current !== null) {//第一次渲染current是null
       // An class component without an instance only mounts if it suspended
       // inside a non- concurrent tree, in an inconsistent state. We want to
@@ -460,7 +460,7 @@ function updateClassComponent(
       workInProgress.effectTag |= Placement;
     }
     // In the initial pass we might need to construct the instance.
-    constructClassInstance(
+    constructClassInstance( //ClassComponent的实例 挂载了一个updater对象 包含setState方法等
       workInProgress,
       Component,
       nextProps,
@@ -481,7 +481,7 @@ function updateClassComponent(
       nextProps,
       renderExpirationTime,
     );
-  } else {
+  } else { //有current
     shouldUpdate = updateClassInstance(
       current,
       workInProgress,
@@ -685,9 +685,9 @@ function updateHostRoot(current, workInProgress, renderExpirationTime) {
 }
 
 function updateHostComponent(current, workInProgress, renderExpirationTime) {
-  pushHostContext(workInProgress);
+  pushHostContext(workInProgress); //context
 
-  if (current === null) {
+  if (current === null) { //复用原本存在的root的内部的DOM节点
     tryToClaimNextHydratableInstance(workInProgress);
   }
 
@@ -717,13 +717,13 @@ function updateHostComponent(current, workInProgress, renderExpirationTime) {
     renderExpirationTime !== Never &&
     workInProgress.mode & ConcurrentMode &&
     shouldDeprioritizeSubtree(type, nextProps)
-  ) {
+  ) { //shouldDeprioritizeSubtree判断了是否有hidden这个prop，如果这个节点是AsyncMode的并且有hidden，就设置expirationTime为Never。设置为Never是什么意思？意味着他的优先级是最低的，知道没有任何其他任务的时候这个才会被执行
     // Schedule this fiber to re-render at offscreen priority. Then bailout.
     workInProgress.expirationTime = Never;
     return null;
   }
 
-  reconcileChildren(
+  reconcileChildren( //调和子节点
     current,
     workInProgress,
     nextChildren,
@@ -906,7 +906,7 @@ function mountIndeterminateComponent(
   Component,
   renderExpirationTime,
 ) {
-  if (_current !== null) {
+  if (_current !== null) { //渲染时有suspend
     // An indeterminate component only mounts if it suspended inside a non-
     // concurrent tree, in an inconsistent state. We want to tree it like
     // a new mount, even though an empty version of it already committed.
@@ -1474,15 +1474,15 @@ function bailoutOnAlreadyFinishedWork(
   if (
     childExpirationTime === NoWork ||
     childExpirationTime > renderExpirationTime
-  ) {
+  ) { // 子树没有更新，返回null
     // The children don't have any work either. We can skip them.
     // TODO: Once we add back resuming, we should check if the children are
     // a work-in-progress set. If so, we need to transfer their effects.
-    return null;
+    return null; // 代表performUnitOfWork中next接收的null，直接completeUnitOfWork，就不解析child了->性能优化
   } else {
     // This fiber doesn't have work, but its subtree does. Clone the child
     // fibers and continue.
-    cloneChildFibers(current, workInProgress);
+    cloneChildFibers(current, workInProgress); // 复用子节点，并返回
     return workInProgress.child;
   }
 }
@@ -1501,8 +1501,8 @@ function beginWork(
       oldProps === newProps &&
       !hasLegacyContextChanged() &&
       (updateExpirationTime === NoWork ||
-        updateExpirationTime > renderExpirationTime)
-    ) {
+        updateExpirationTime > renderExpirationTime) //  更新内容不是这个更新造成的，可以忽略
+    ) { // hasLegacyContextChanged 判断当前节点和父节点有没有老的context api -> 对性能影响非常大
       // This fiber does not have any pending work. Bailout without entering
       // the begin phase. There's still some bookkeeping we that needs to be done
       // in this optimized path, mostly pushing stuff onto the stack.
@@ -1583,12 +1583,12 @@ function beginWork(
         current,
         workInProgress,
         renderExpirationTime,
-      );
+      );// 这个return返回performUnitOfWork的next 
     }
   }
 
   // Before entering the begin phase, clear the expiration time.
-  workInProgress.expirationTime = NoWork;
+  workInProgress.expirationTime = NoWork; // 有更新，清空expirationTime
 
   switch (workInProgress.tag) {
     case IndeterminateComponent: {
@@ -1642,7 +1642,7 @@ function beginWork(
     }
     case HostRoot:
       return updateHostRoot(current, workInProgress, renderExpirationTime);
-    case HostComponent:
+    case HostComponent: // div等DOM组件
       return updateHostComponent(current, workInProgress, renderExpirationTime);
     case HostText:
       return updateHostText(current, workInProgress);
