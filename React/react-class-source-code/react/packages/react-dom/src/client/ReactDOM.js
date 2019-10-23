@@ -512,7 +512,7 @@ function legacyCreateRootFromDOMContainer(
 }
 
 /**
- *
+ * 渲染组件的子组件树至父容器
  * @param {*} parentComponent render时传null
  * @param {*} children
  * @param {*} container
@@ -520,25 +520,25 @@ function legacyCreateRootFromDOMContainer(
  * @param {*} callback
  */
 function legacyRenderSubtreeIntoContainer(
-  parentComponent: ?React$Component<any, any>,
-  children: ReactNodeList,
-  container: DOMContainer,
-  forceHydrate: boolean,
-  callback: ?Function,
+  parentComponent: ?React$Component<any, any>,//父组件,null
+  children: ReactNodeList,//element 虚拟的dom
+  container: DOMContainer,//html中dom根对象
+  forceHydrate: boolean,//服务器渲染标识，这里是false
+  callback: ?Function,// 回调
 ) {
-  // TODO: Ensure all entry points contain this check
+  // TODO: Ensure all entry points contain this check 校验container
   invariant(
     isValidContainer(container),
     'Target container is not a DOM element.',
   );
 
-  if (__DEV__) {
+  if (__DEV__) {//开发模式render时进行检查并提供许多有用的警告和错误提示信息
     topLevelUpdateWarnings(container);
   }
 
   // TODO: Without `any` type, Flow says "Property cannot be accessed on any
   // member of intersection type." Whyyyyyy.
-  // 第一次渲染不存在任何react相关东西
+  // 获取root，第一次渲染不存在任何react相关东西
   let root: Root = (container._reactRootContainer: any);
   if (!root) {
     // Initial mount
@@ -556,7 +556,7 @@ function legacyRenderSubtreeIntoContainer(
       };
     }
     // Initial mount should not be batched.
-    // 批量更新
+    // 初始化容器相关
     DOMRenderer.unbatchedUpdates(() => {
       if (parentComponent != null) {
         // parentComponent传入为null 实际不会进入这个判断
@@ -588,7 +588,7 @@ function legacyRenderSubtreeIntoContainer(
       root.render(children, callback);
     }
   }
-  return DOMRenderer.getPublicRootInstance(root._internalRoot);
+  return DOMRenderer.getPublicRootInstance(root._internalRoot);// 返回根容器fiber树的根fiber实例
 }
 
 function createPortal(
@@ -642,7 +642,7 @@ const ReactDOM: Object = {
     return DOMRenderer.findHostInstance(componentOrElement);
   },
 
-  // hydrate方法，只有第四个参数有区别，是否复用节点-> 服务端渲染很有用，其他和renader方法相同
+  // 新的API，未来代替render,hydrate方法，只有第四个参数有区别，是否复用节点-> 服务端渲染很有用，其他和renader方法相同
   hydrate(element: React$Node, container: DOMContainer, callback: ?Function) {
     // TODO: throw or warn if we couldn't hydrate?
     return legacyRenderSubtreeIntoContainer(
@@ -654,11 +654,11 @@ const ReactDOM: Object = {
     );
   },
 
-  // render方法
+  // render方法，React15重要的API
   render(
-    element: React$Element<any>,
-    container: DOMContainer, // 挂载DOM节点
-    callback: ?Function,
+    element: React$Element<any>,//根组件
+    container: DOMContainer, // 挂载DOM节点，id为root的节点
+    callback: ?Function,//回调函数
   ) {
     return legacyRenderSubtreeIntoContainer(
       null,
@@ -668,7 +668,7 @@ const ReactDOM: Object = {
       callback,
     );
   },
-
+  // 将组件挂载到传入DOM节点上(不稳定api)
   unstable_renderSubtreeIntoContainer(
     parentComponent: React$Component<any, any>,
     element: React$Element<any>,
