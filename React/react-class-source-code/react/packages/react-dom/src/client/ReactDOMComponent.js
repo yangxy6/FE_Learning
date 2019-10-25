@@ -786,7 +786,7 @@ export function updateProperties(
     tag === 'input' &&
     nextRawProps.type === 'radio' &&
     nextRawProps.name != null
-  ) {
+  ) { //radio有设置cheked
     ReactDOMInput.updateChecked(domElement, nextRawProps);
   }
 

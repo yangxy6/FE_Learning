@@ -50,6 +50,7 @@ if (__DEV__) {
 
   // Check that the browser supports the APIs we need to implement our special
   // DEV version of invokeGuardedCallback
+  // 方便开发时捕获和收集错误，使用监听event形式，不用trycatch形式是因为浏览器pause调试时会直接catch页面就不会渲染
   if (
     typeof window !== 'undefined' &&
     typeof window.dispatchEvent === 'function' &&

@@ -384,7 +384,7 @@ function commitAllHostEffects() {
 
     const effectTag = nextEffect.effectTag;
 
-    if (effectTag & ContentReset) {
+    if (effectTag & ContentReset) { //ContentReset 文字重置
       commitResetTextContent(nextEffect);
     }
 
@@ -399,10 +399,10 @@ function commitAllHostEffects() {
     // updates, and deletions. To avoid needing to add a case for every
     // possible bitmap value, we remove the secondary effects from the
     // effect tag and switch on that value.
-    let primaryEffectTag = effectTag & (Placement | Update | Deletion);
+    let primaryEffectTag = effectTag & (Placement | Update | Deletion); //Placement新插入 |修改|删除
     switch (primaryEffectTag) {
       case Placement: {
-        commitPlacement(nextEffect);
+        commitPlacement(nextEffect); //新增节点
         // Clear the "placement" from effect tag so that we know that this is inserted, before
         // any life-cycles like componentDidMount gets called.
         // TODO: findDOMNode doesn't rely on this any more but isMounted
@@ -413,14 +413,14 @@ function commitAllHostEffects() {
       }
       case PlacementAndUpdate: {
         // Placement
-        commitPlacement(nextEffect);
+        commitPlacement(nextEffect);//老节点，但是和兄弟节点位置换了
         // Clear the "placement" from effect tag so that we know that this is inserted, before
         // any life-cycles like componentDidMount gets called.
         nextEffect.effectTag &= ~Placement;
 
         // Update
         const current = nextEffect.alternate;
-        commitWork(current, nextEffect);
+        commitWork(current, nextEffect); //执行更新
         break;
       }
       case Update: {
@@ -429,7 +429,7 @@ function commitAllHostEffects() {
         break;
       }
       case Deletion: {
-        commitDeletion(nextEffect);
+        commitDeletion(nextEffect);// 删除节点，1、遍历子2、卸载ref3、调用componentDidMount  只有hostCompoment才会循环嵌套
         break;
       }
     }
@@ -440,8 +440,8 @@ function commitAllHostEffects() {
     ReactCurrentFiber.resetCurrentFiber();
   }
 }
-
-function commitBeforeMutationLifecycles() {
+// 获取状态快照-> compoentDidUpdate
+function commitBeforeMutationLifecycles() { // 调用同名方法
   while (nextEffect !== null) {
     if (__DEV__) {
       ReactCurrentFiber.setCurrentFiber(nextEffect);
@@ -451,7 +451,7 @@ function commitBeforeMutationLifecycles() {
     if (effectTag & Snapshot) {
       recordEffect();
       const current = nextEffect.alternate;
-      commitBeforeMutationLifeCycles(current, nextEffect);
+      commitBeforeMutationLifeCycles(current, nextEffect); 
     }
 
     // Don't cleanup effects yet;
@@ -464,7 +464,7 @@ function commitBeforeMutationLifecycles() {
   }
 }
 
-function commitAllLifeCycles(
+function commitAllLifeCycles( //生命周期
   finishedRoot: FiberRoot,
   committedExpirationTime: ExpirationTime,
 ) {
@@ -523,8 +523,8 @@ function markLegacyErrorBoundaryAsFailed(instance: mixed) {
 }
 
 function commitRoot(root: FiberRoot, finishedWork: Fiber): void {
-  isWorking = true;
-  isCommitting = true;
+  isWorking = true; // 正在工作
+  isCommitting = true; // 正在提交
   startCommitTimer();
 
   invariant(
@@ -539,7 +539,7 @@ function commitRoot(root: FiberRoot, finishedWork: Fiber): void {
     'Cannot commit an incomplete root. This error is likely caused by a ' +
       'bug in React. Please file an issue.',
   );
-  root.pendingCommitExpirationTime = NoWork;
+  root.pendingCommitExpirationTime = NoWork; //即将操作commit
 
   // Update the pending priority levels to account for the work that we are
   // about to commit. This needs to happen before calling the lifecycles, since
@@ -552,7 +552,7 @@ function commitRoot(root: FiberRoot, finishedWork: Fiber): void {
       childExpirationTimeBeforeCommit < updateExpirationTimeBeforeCommit)
       ? childExpirationTimeBeforeCommit
       : updateExpirationTimeBeforeCommit;
-  markCommittedPriorityLevels(root, earliestRemainingTimeBeforeCommit);
+  markCommittedPriorityLevels(root, earliestRemainingTimeBeforeCommit); //标记优先级，根据expirationTime和childExpirationTime确定优先级，expirationTime和childExpirationTime大部分相同，除了外部强制指定时两者不同
 
   let prevInteractions: Set<Interaction> = (null: any);
   if (enableSchedulerTracing) {
@@ -567,11 +567,13 @@ function commitRoot(root: FiberRoot, finishedWork: Fiber): void {
 
   let firstEffect;
   if (finishedWork.effectTag > PerformedWork) {
+    // PerformedWork是1，大于说明finishedWork上有副作用需要commit
     // A fiber's effect list consists only of its children, not itself. So if
     // the root has an effect, we need to add it to the end of the list. The
     // resulting list is the set that would belong to the root's parent, if
     // it had one; that is, all the effects in the tree including the root.
     if (finishedWork.lastEffect !== null) {
+      // 副作用增加到链表上
       finishedWork.lastEffect.nextEffect = finishedWork;
       firstEffect = finishedWork.firstEffect;
     } else {
@@ -585,9 +587,9 @@ function commitRoot(root: FiberRoot, finishedWork: Fiber): void {
   prepareForCommit(root.containerInfo);
 
   // Invoke instances of getSnapshotBeforeUpdate before mutation.
-  nextEffect = firstEffect;
+  nextEffect = firstEffect; // 全局变量
   startCommitSnapshotEffectsTimer();
-  while (nextEffect !== null) {
+  while (nextEffect !== null) { //第一个循环->获取状态快照
     let didError = false;
     let error;
     if (__DEV__) {
@@ -631,6 +633,7 @@ function commitRoot(root: FiberRoot, finishedWork: Fiber): void {
   nextEffect = firstEffect;
   startCommitHostEffectsTimer();
   while (nextEffect !== null) {
+    //第二个循环
     let didError = false;
     let error;
     if (__DEV__) {
@@ -677,10 +680,11 @@ function commitRoot(root: FiberRoot, finishedWork: Fiber): void {
   nextEffect = firstEffect;
   startCommitLifeCyclesTimer();
   while (nextEffect !== null) {
+    //第三个循环
     let didError = false;
     let error;
     if (__DEV__) {
-      invokeGuardedCallback(
+      invokeGuardedCallback( //帮助开发中收集错误和开发工具
         null,
         commitAllLifeCycles,
         null,
@@ -711,7 +715,7 @@ function commitRoot(root: FiberRoot, finishedWork: Fiber): void {
       }
     }
   }
-
+  // commit阶段结束
   isCommitting = false;
   isWorking = false;
   stopCommitLifeCyclesTimer();
@@ -720,15 +724,15 @@ function commitRoot(root: FiberRoot, finishedWork: Fiber): void {
   if (__DEV__ && ReactFiberInstrumentation.debugTool) {
     ReactFiberInstrumentation.debugTool.onCommitWork(finishedWork);
   }
-
+  // 又一次判断-> 因为执行生命周期方法中可能会出现新的更新，所以要等到最后在判断
   const updateExpirationTimeAfterCommit = finishedWork.expirationTime;
   const childExpirationTimeAfterCommit = finishedWork.childExpirationTime;
-  const earliestRemainingTimeAfterCommit =
+  const earliestRemainingTimeAfterCommit = // 新的root上expirationTime
     updateExpirationTimeAfterCommit === NoWork ||
     (childExpirationTimeAfterCommit !== NoWork &&
       childExpirationTimeAfterCommit < updateExpirationTimeAfterCommit)
       ? childExpirationTimeAfterCommit
-      : updateExpirationTimeAfterCommit;
+      : updateExpirationTimeAfterCommit; 
   if (earliestRemainingTimeAfterCommit === NoWork) {
     // If there's no remaining work, we can clear the set of already failed
     // error boundaries.
@@ -1117,13 +1121,15 @@ function performUnitOfWork(workInProgress: Fiber): Fiber | null {
   return next;
 }
 
-function workLoop(isYieldy) { //同步false
+function workLoop(isYieldy) {
+  //同步false
   if (!isYieldy) {
     // Flush work without yielding
     while (nextUnitOfWork !== null) {
       nextUnitOfWork = performUnitOfWork(nextUnitOfWork);
     }
-  } else { // nextUnitOfWork等于beginWork中return的next，如果next为空，在performUnitOfWork中会completeUnitOfWork，next!==null会继续Loop
+  } else {
+    // nextUnitOfWork等于beginWork中return的next，如果next为空，在performUnitOfWork中会completeUnitOfWork，next!==null会继续Loop
     // Flush asynchronous work until the deadline runs out of time.
     while (nextUnitOfWork !== null && !shouldYield()) {
       nextUnitOfWork = performUnitOfWork(nextUnitOfWork);
@@ -1152,12 +1158,14 @@ function renderRoot( //渲染root 超级重要！！！
     expirationTime !== nextRenderExpirationTime ||
     root !== nextRoot ||
     nextUnitOfWork === null
-  ) { //有新的更新
+  ) {
+    //有新的更新
     // Reset the stack and start working from the root. 清空stack重新开始work
     resetStack();
     nextRoot = root;
     nextRenderExpirationTime = expirationTime;
-    nextUnitOfWork = createWorkInProgress( //返回workInProgress
+    nextUnitOfWork = createWorkInProgress(
+      //返回workInProgress
       nextRoot.current,
       null,
       nextRenderExpirationTime,
@@ -1288,7 +1296,8 @@ function renderRoot( //渲染root 超级重要！！！
   resetContextDependences();
 
   // Yield back to main thread. // 被中断回到主线程
-  if (didFatal) { //
+  if (didFatal) {
+    //
     const didCompleteRoot = false;
     stopWorkLoopTimer(interruptedBy, didCompleteRoot);
     interruptedBy = null;
@@ -1304,7 +1313,8 @@ function renderRoot( //渲染root 超级重要！！！
     return;
   }
 
-  if (nextUnitOfWork !== null) { //任务没有执行完，被中断了
+  if (nextUnitOfWork !== null) {
+    //任务没有执行完，被中断了
     // There's still remaining async work in this tree, but we ran out of time
     // in the current frame. Yield back to the renderer. Unless we're
     // interrupted by a higher priority update, we'll continue later from where
@@ -1332,9 +1342,11 @@ function renderRoot( //渲染root 超级重要！！！
   nextRoot = null;
   interruptedBy = null;
 
-  if (nextRenderDidError) { //捕捉到可处理的错误
+  if (nextRenderDidError) {
+    //捕捉到可处理的错误
     // There was an error
-    if (hasLowerPriorityWork(root, expirationTime)) { //判断是否有优先级更低的任务
+    if (hasLowerPriorityWork(root, expirationTime)) {
+      //判断是否有优先级更低的任务
       // There's lower priority work. If so, it may have the effect of fixing
       // the exception that was just thrown. Exit without committing. This is
       // similar to a suspend, but without a timeout because we're not waiting
@@ -2151,11 +2163,13 @@ function performWork(minExpirationTime: ExpirationTime, dl: Deadline | null) {
   // the deadline.
   findHighestPriorityRoot();
 
-  if (deadline !== null) {// 异步
+  if (deadline !== null) {
+    // 异步
     recomputeCurrentRendererTime();
     currentSchedulerTime = currentRendererTime;
 
-    if (enableUserTimingAPI) { //DEV
+    if (enableUserTimingAPI) {
+      //DEV
       const didExpire = nextFlushedExpirationTime < currentRendererTime;
       const timeout = expirationTimeToMs(nextFlushedExpirationTime);
       stopRequestCallbackTimer(didExpire, timeout);
@@ -2176,7 +2190,8 @@ function performWork(minExpirationTime: ExpirationTime, dl: Deadline | null) {
       recomputeCurrentRendererTime();
       currentSchedulerTime = currentRendererTime;
     }
-  } else {// 同步
+  } else {
+    // 同步
     while (
       nextFlushedRoot !== null &&
       nextFlushedExpirationTime !== NoWork &&

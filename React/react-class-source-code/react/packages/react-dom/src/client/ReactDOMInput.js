@@ -125,7 +125,7 @@ export function initWrapperState(element: Element, props: Object) {
   };
 }
 
-export function updateChecked(element: Element, props: Object) {
+export function updateChecked(element: Element, props: Object) { //更新checked
   const node = ((element: any): InputWithWrapperState);
   const checked = props.checked;
   if (checked != null) {

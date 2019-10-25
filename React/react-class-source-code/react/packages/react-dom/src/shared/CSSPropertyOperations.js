@@ -62,7 +62,7 @@ export function setValueForStyles(node, styles) {
       if (!isCustomProperty) {
         warnValidStyle(styleName, styles[styleName]);
       }
-    }
+    } 
     const styleValue = dangerousStyleValue(
       styleName,
       styles[styleName],

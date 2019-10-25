@@ -590,14 +590,14 @@ export function commitUpdateQueue<State>(
   // lower priority updates left over, we need to keep the captured updates
   // in the queue so that they are rebased and not dropped once we process the
   // queue again at the lower priority.
-  if (finishedQueue.firstCapturedUpdate !== null) {
+  if (finishedQueue.firstCapturedUpdate !== null) { //渲染时异常被捕获
     // Join the captured update list to the end of the normal list.
-    if (finishedQueue.lastUpdate !== null) {
+    if (finishedQueue.lastUpdate !== null) { //对于被捕获错误无法处理时，放到低优先级更新中尝试能否更新
       finishedQueue.lastUpdate.next = finishedQueue.firstCapturedUpdate;
       finishedQueue.lastUpdate = finishedQueue.lastCapturedUpdate;
     }
     // Clear the list of captured updates.
-    finishedQueue.firstCapturedUpdate = finishedQueue.lastCapturedUpdate = null;
+    finishedQueue.firstCapturedUpdate = finishedQueue.lastCapturedUpdate = null; //哪哪都处理不了就清空
   }
 
   // Commit the effects
@@ -607,7 +607,7 @@ export function commitUpdateQueue<State>(
   commitUpdateEffects(finishedQueue.firstCapturedEffect, instance);
   finishedQueue.firstCapturedEffect = finishedQueue.lastCapturedEffect = null;
 }
-
+// this.setState({test:'123},()=>{}) 这里执行回调
 function commitUpdateEffects<State>(
   effect: Update<State> | null,
   instance: any,
