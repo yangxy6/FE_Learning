@@ -13,17 +13,17 @@
  * @return {number[]}
  * 思路：set去重，has判断
  */
-// var intersection = function(nums1, nums2) {
-//   let result = [];
-//   let set1 = new Set(nums1);
-//   let set2 = new Set(nums2);
-//   set1.forEach(item => {
-//     if (set2.has(item)) {
-//       result.push(item);
-//     }
-//   });
-//   return result;
-// };
+var intersection = function(nums1, nums2) {
+  let result = [];
+  let set1 = new Set(nums1);
+  let set2 = new Set(nums2);
+  set1.forEach(item => {
+    if (set2.has(item)) {
+      result.push(item);
+    }
+  });
+  return result;
+};
 
 /**
  * 60/60 cases passed (56 ms)
