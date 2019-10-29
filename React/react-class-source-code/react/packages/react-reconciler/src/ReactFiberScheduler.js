@@ -567,6 +567,7 @@ function commitRoot(root: FiberRoot, finishedWork: Fiber): void {
 
   let firstEffect;
   if (finishedWork.effectTag > PerformedWork) {
+    //  effect list只包含children，不包含自己，如果finishedWork上也有副作用，需要将副作用加到effect list上
     // PerformedWork是1，大于说明finishedWork上有副作用需要commit
     // A fiber's effect list consists only of its children, not itself. So if
     // the root has an effect, we need to add it to the end of the list. The

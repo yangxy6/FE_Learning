@@ -245,7 +245,7 @@ function commitLifeCycles(
     case ClassComponent: {
       const instance = finishedWork.stateNode;
       if (finishedWork.effectTag & Update) {
-        if (current === null) {
+        if (current === null) { //第一次渲染
           startPhaseTimer(finishedWork, 'componentDidMount');
           instance.props = finishedWork.memoizedProps;
           instance.state = finishedWork.memoizedState;
