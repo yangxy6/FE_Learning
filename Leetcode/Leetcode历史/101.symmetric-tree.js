@@ -40,7 +40,7 @@ var isSymmetric = function(root) {
  */
 const isSymmetric = function(root) {
   if (root === null) return true;
-  return isMirror(root.left, root.right);
+  return isMirror(root.left, root.right); //问题变成判断两个树是否相等
   function isMirror(left, right) {
     // 有null节点
     if (left === null && right === null) return true;
