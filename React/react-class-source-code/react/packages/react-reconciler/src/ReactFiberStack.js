@@ -3,7 +3,7 @@
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
- *
+ * context实现的stack结构
  * @flow
  */
 
@@ -48,10 +48,10 @@ function pop<T>(cursor: StackCursor<T>, fiber: Fiber): void {
       warningWithoutStack(false, 'Unexpected Fiber popped.');
     }
   }
+  // [a,b,c]=>c1,c2,c3 在推出也是按顺序推出
+  cursor.current = valueStack[index]; //推出时cursor.current为老的值
 
-  cursor.current = valueStack[index];
-
-  valueStack[index] = null;
+  valueStack[index] = null; // 清空栈valueStack[index]
 
   if (__DEV__) {
     fiberStack[index] = null;
@@ -63,13 +63,13 @@ function pop<T>(cursor: StackCursor<T>, fiber: Fiber): void {
 function push<T>(cursor: StackCursor<T>, value: T, fiber: Fiber): void {
   index++;
 
-  valueStack[index] = cursor.current;
+  valueStack[index] = cursor.current; //老的推入stack
 
   if (__DEV__) {
     fiberStack[index] = fiber;
   }
 
-  cursor.current = value;
+  cursor.current = value;//新的赋值cursor.current
 }
 
 function checkThatStackIsEmpty() {

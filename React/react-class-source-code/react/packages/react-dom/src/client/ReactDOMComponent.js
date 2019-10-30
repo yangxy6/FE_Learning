@@ -690,7 +690,7 @@ export function diffProperties(
       if (lastProp) {
         // Unset styles on `lastProp` but not on `nextProp`.
         for (styleName in lastProp) {
-          if (
+          if (//老的有，新的没有，清空属性
             lastProp.hasOwnProperty(styleName) &&
             (!nextProp || !nextProp.hasOwnProperty(styleName))
           ) {
@@ -702,7 +702,7 @@ export function diffProperties(
         }
         // Update styles that changed since `lastProp`.
         for (styleName in nextProp) {
-          if (
+          if (//新的有，老的和新的不相同
             nextProp.hasOwnProperty(styleName) &&
             lastProp[styleName] !== nextProp[styleName]
           ) {

@@ -444,7 +444,7 @@ function updateClassComponent(
   } else {
     hasContext = false;
   }
-  prepareToReadContext(workInProgress, renderExpirationTime);
+  prepareToReadContext(workInProgress, renderExpirationTime);//新的contextApi
 
   const instance = workInProgress.stateNode;
   let shouldUpdate;
@@ -495,7 +495,7 @@ function updateClassComponent(
     workInProgress,
     Component,
     shouldUpdate,
-    hasContext,
+    hasContext, 
     renderExpirationTime,
   );
 }
@@ -505,7 +505,7 @@ function finishClassComponent(
   workInProgress: Fiber,
   Component: any,
   shouldUpdate: boolean,
-  hasContext: boolean,
+  hasContext: boolean, //true
   renderExpirationTime: ExpirationTime,
 ) {
   // Refs should update even if shouldComponentUpdate returns false

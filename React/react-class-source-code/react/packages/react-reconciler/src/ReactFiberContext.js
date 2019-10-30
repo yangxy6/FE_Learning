@@ -33,9 +33,9 @@ if (__DEV__) {
 }
 
 // A cursor to the current merged context object on the stack.
-let contextStackCursor: StackCursor<Object> = createCursor(emptyContextObject);
+let contextStackCursor: StackCursor<Object> = createCursor(emptyContextObject); // 当前可以拿到的context
 // A cursor to a boolean indicating whether the context has changed.
-let didPerformWorkStackCursor: StackCursor<boolean> = createCursor(false);
+let didPerformWorkStackCursor: StackCursor<boolean> = createCursor(false);//更新到某个节点时context是否有变化
 // Keep track of the previous context object that was on the stack.
 // We use this to get access to the parent context after we have already
 // pushed the next context provider, and now need to merge their contexts.
@@ -44,7 +44,7 @@ let previousContext: Object = emptyContextObject;
 function getUnmaskedContext(
   workInProgress: Fiber,
   Component: Function,
-  didPushOwnContextIfProvider: boolean,
+  didPushOwnContextIfProvider: boolean, //是否自己提供context
 ): Object {
   if (didPushOwnContextIfProvider && isContextProvider(Component)) {
     // If the fiber is a context provider itself, when we read its context
@@ -53,7 +53,7 @@ function getUnmaskedContext(
     // previous (parent) context instead for a context provider.
     return previousContext;
   }
-  return contextStackCursor.current;
+  return contextStackCursor.current;//parent
 }
 
 function cacheContext(
@@ -112,12 +112,12 @@ function getMaskedContext(
   return context;
 }
 
-function hasContextChanged(): boolean {
+function hasContextChanged(): boolean { //判断组件是否需要context更新的关键，提高性能
   return didPerformWorkStackCursor.current;
 }
 
 function isContextProvider(type: Function): boolean {
-  const childContextTypes = type.childContextTypes;
+  const childContextTypes = type.childContextTypes; //声明的childContextTypes，使用中强制childContextTypes
   return childContextTypes !== null && childContextTypes !== undefined;
 }
 
@@ -180,7 +180,7 @@ function processChildContext(
     ReactCurrentFiber.setCurrentPhase('getChildContext');
   }
   startPhaseTimer(fiber, 'getChildContext');
-  childContext = instance.getChildContext();
+  childContext = instance.getChildContext(); 
   stopPhaseTimer();
   if (__DEV__) {
     ReactCurrentFiber.setCurrentPhase(null);
@@ -250,23 +250,23 @@ function invalidateContextProvider(
     // Merge parent and own context.
     // Skip this if we're not updating due to sCU.
     // This avoids unnecessarily recomputing memoized values.
-    const mergedContext = processChildContext(
+    const mergedContext = processChildContext( //计算新的对象-合并
       workInProgress,
       type,
       previousContext,
     );
     instance.__reactInternalMemoizedMergedChildContext = mergedContext;
 
-    // Replace the old (or empty) context with the new one.
+    // Replace the old (or empty) context with the new one. 先pop是因为beginWork时push一个老的
     // It is important to unwind the context in the reverse order.
     pop(didPerformWorkStackCursor, workInProgress);
     pop(contextStackCursor, workInProgress);
     // Now push the new context and mark that it has changed.
     push(contextStackCursor, mergedContext, workInProgress);
     push(didPerformWorkStackCursor, didChange, workInProgress);
-  } else {
+  } else { //didChange没有变化时contextStackCursor不需要变化，之前已经push
     pop(didPerformWorkStackCursor, workInProgress);
-    push(didPerformWorkStackCursor, didChange, workInProgress);
+    push(didPerformWorkStackCursor, didChange, workInProgress); //不需要更新
   }
 }
 

@@ -508,7 +508,7 @@ function checkClassInstance(workInProgress: Fiber, ctor: any, newProps: any) {
 // ClassComponent的实例 挂载了一个updater对象
 function adoptClassInstance(workInProgress: Fiber, instance: any): void {
   instance.updater = classComponentUpdater;
-  workInProgress.stateNode = instance;
+  workInProgress.stateNode = instance; //挂载DOM节点
   // The instance needs access to the fiber so that it can schedule updates
   ReactInstanceMap.set(instance, workInProgress);
   if (__DEV__) {
@@ -997,7 +997,7 @@ function updateClassInstance(
   instance.props = oldProps;
 
   const oldContext = instance.context;
-  const contextType = ctor.contextType;
+  const contextType = ctor.contextType; //新的contextAPi
   let nextContext;
   if (typeof contextType === 'object' && contextType !== null) {
     nextContext = readContext(contextType);
