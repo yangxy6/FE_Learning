@@ -32,7 +32,7 @@ var singleNumber = function(nums) {
 var singleNumber = function(nums) {
   let ans;
   for (let i = 0; i < nums.length; i++) {
-    ans ^= nums[i];
+    ans ^= nums[i]; // 异或操作与顺序没有关系a^b^c与c^b^a一样，其中a^a=0两个相同值没有互异的点位
   }
   return ans;
 };
