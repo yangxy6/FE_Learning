@@ -16,3 +16,6 @@ function newOperator(ctor, ...arg) {
   let isFunction = typeof res === 'function';
   return isObject || isFunction ? res : obj;
 }
+
+// 参考文章 - [ ] [各种源码实现，你想要的这里都有](https://juejin.im/post/5dc3894051882517a652dbd7)
+// [20道JS原理题助你面试一臂之力！](https://juejin.im/post/5d2ee123e51d4577614761f8?utm_source=gold_browser_extension#heading-6)
