@@ -1,3 +1,8 @@
+// 21. Merge Two Sorted Lists 合并两个排序链表
+// 思路：- 开始打算以l1为主，将比较项逐个加在l1中，这样指针操作很麻烦
+//      - 创建新链表，通过每项比较将node加到新链表中，同时移动三个链表的指针
+//       - 注意：1.while结束条件 l1&&l2,链表遍历节点时未遍历到节点处理->最大，直接加到新链表的最后
+//              2.res为新链表，包含head
 /**
  * Definition for singly-linked list.
  * function ListNode(val) {

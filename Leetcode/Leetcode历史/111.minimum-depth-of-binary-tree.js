@@ -15,18 +15,8 @@
  * @return {number}
  */
 var minDepth = function(root) {
-  if (root == null) {
+  if (!root) {
     return 0;
   }
-  if (root.left == null && root.right == null) {
-    return 1;
-  }
-  let result = Number.MAX_SAFE_INTEGER;
-  if (root.left != null) {
-    result = Math.min(minDepth(root.left), result);
-  }
-  if (root.right != null) {
-    result = Math.min(minDepth(root.right), result);
-  }
-  return result + 1;
+  return Math.max(minDepth(root.left), minDepth(root.right));
 };

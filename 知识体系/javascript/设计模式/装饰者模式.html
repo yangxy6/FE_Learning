@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div>
+      姓名：<input type="text" name="" id="name_input" />
+      <span id="name_text">*请输入小小小芒果</span>
+    </div>
+    <div>
+      电话：<input type="text" name="" id="tel_input" /><span
+        id="tel_text"
+      ></span>
+    </div>
+
+    <script>
+      let nameInput = document.getElementById('name_input')
+      let nameText = document.getElementById('name_text')
+      nameInput.onclick = function() {
+        nameText.style.display = 'none'
+      }
+
+      // 装饰者模式，在不改变元对象的基础上，通过对其进行包装拓展（添加属性和方法）使原有对象可以满足用户更复杂的要求
+      let decorator = function(input, fn, fn2 = function() {}) {
+        // let input = document.getElementById(input)
+        if (typeof input.onclick === 'function') {
+          let oldClickFn = input.onclick
+          // 为事件源定义新的事件
+          input.onclick = function() {
+            oldClickFn()
+            // 新增
+            fn()
+          }
+        } else {
+          // 事件源未绑定事件，直接为事件源绑定新的回调函数
+          input.onclick = fn
+        }
+        input.onblur = function() {
+          fn2()
+        }
+      }
+
+      decorator(
+        nameInput,
+        function() {
+          nameText.style.display = 'inline-block'
+          nameText.style.color = 'red'
+          nameText.innerHTML = '啦啦啦啦'
+        },
+        function() {
+          nameText.style.display = 'none'
+        }
+      )
+      decorator(document.getElementById('tel_input'), function() {
+        document.getElementById('tel_text').innerHTML = '哈哈哈哈'
+      })
+    </script>
+  </body>
+</html>
